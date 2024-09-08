@@ -1,0 +1,379 @@
+Directory Structure:
+./
+    env/
+    get_context.egg-info/
+    get_context/
+    .contextignore
+    LICENSE
+    MANIFEST.in
+    README.md
+    setup.py
+    .gitignore
+    context.txt
+    env/
+        bin/ (contents omitted)
+        include/ (contents omitted)
+        lib/ (contents omitted)
+        pyvenv.cfg
+    get_context.egg-info/
+        PKG-INFO
+        SOURCES.txt
+        entry_points.txt
+        top_level.txt
+        dependency_links.txt
+    get_context/
+        __pycache__/
+        directory_structure.py
+        __init__.py
+        cli.py
+        file_utils.py
+        ignore_utils.py
+        merger.py
+        __pycache__/
+            ignore_utils.cpython-312.pyc
+            cli.cpython-312.pyc
+            merger.cpython-312.pyc
+            __init__.cpython-312.pyc
+            file_utils.cpython-312.pyc
+            directory_structure.cpython-312.pyc
+
+
+==================================================
+
+setup.py
+# setup.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# This file keeps track of the metadata for the package.
+
+from setuptools import setup, find_packages
+
+setup(
+
+    # Package information
+    name='get_context',  # the name of the package
+    version='0.1.0',  # the current version
+    description='Generates a single text document for a directory',  # short description
+    
+    # Read the contents of your README.md file for a full-length description
+    long_description=open('README.md').read(),  # file should be opened and read
+    long_description_content_type='text/markdown',  # specifies that the long description is markdown
+
+    # URL to the source code or documentation
+    url='https://github.com/Aiden2244/get-context',  # source code location
+
+    # Classifiers: help others find the package based on metadata
+    classifiers=[
+        'Programming Language :: Python :: 3',  # specifies Python 3
+        'License :: OSI Approved :: MIT License',  # your chosen license
+        'Operating System :: OS Independent',  # works on any OS
+    ],
+
+    # Author information
+    author='Aiden R. McCormack',  # your name
+    author_email='aidenm2244@proton.me',  # your email
+    
+    # Entry point: where the program starts executing
+    entry_points={
+        'console_scripts': [
+            'get_context=get_context.cli:main',  # links command to main function
+        ],
+    },
+
+    # Packages: automatically discovers all modules and packages
+    packages=find_packages(),  # finds all Python packages recursively in the project
+
+    # Dependencies: external libraries your project needs (empty here)
+    install_requires=[],  # no external dependencies for this project
+
+    # Additional metadata (optional, you can add if needed)
+    include_package_data=True,  # include non-Python files like README.md
+)
+
+
+
+==================================================
+
+get_context/directory_structure.py
+# directory_structure.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# this file handles the logic for printing the directory structure at the top of the context file.
+
+import os
+
+def write_directory_structure(directory, outfile, max_items=20, ignore_patterns=None, exclude_dirs=None):
+    """Write the directory structure as plain text to the output file, omitting contents of excluded directories."""
+    for root, dirs, files in os.walk(directory):
+        # Determine the indentation level based on directory depth
+        level = root.replace(directory, '').count(os.sep)
+        indent = ' ' * 4 * level
+
+        # Get the base name of the current directory
+        current_dir = os.path.basename(root) or os.path.basename(directory)
+
+        # Check if the current directory should be excluded
+        is_excluded = False
+        if ignore_patterns and ignore_patterns.match_file(root):
+            is_excluded = True
+        elif exclude_dirs and current_dir in exclude_dirs:
+            is_excluded = True
+
+        # Write the directory name with "(contents omitted)" if excluded
+        if is_excluded:
+            outfile.write(f"{indent}{current_dir}/ (contents omitted)\n")
+            dirs[:] = []  # Do not traverse subdirectories of this directory
+            continue  # Skip to the next iteration
+
+        else:
+            outfile.write(f"{indent}{current_dir}/\n")
+
+        # Prepare subdirectories and files for display
+        sub_indent = ' ' * 4 * (level + 1)
+        items = dirs + files
+
+        # Limit the number of displayed items in each directory
+        for i, item in enumerate(items):
+            if i >= max_items:
+                outfile.write(f"{sub_indent}... (truncated {len(items) - max_items} more items)\n")
+                break
+
+            item_path = os.path.join(root, item)
+            if os.path.isdir(item_path):
+                # Check if the subdirectory should be excluded
+                if ignore_patterns and ignore_patterns.match_file(item_path):
+                    outfile.write(f"{sub_indent}{item}/ (contents omitted)\n")
+                    dirs.remove(item)  # Remove from dirs to prevent os.walk from traversing it
+                elif exclude_dirs and item in exclude_dirs:
+                    outfile.write(f"{sub_indent}{item}/ (contents omitted)\n")
+                    dirs.remove(item)  # Remove from dirs to prevent os.walk from traversing it
+                else:
+                    outfile.write(f"{sub_indent}{item}/\n")
+            else:
+                outfile.write(f"{sub_indent}{item}\n")
+
+    outfile.write("\n\n" + "=" * 50 + "\n\n")
+
+
+
+
+
+==================================================
+
+get_context/__init__.py
+# This file is intentionally blank.
+# It is just here because Python needs it to recognize this library as a package.
+
+==================================================
+
+get_context/cli.py
+# cli.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# This file handles the CLI logic for the context generator.
+
+import sys
+import os
+from .merger import merge_files_in_directory
+
+def print_usage():
+    print("Usage:")
+    print("  python3 -m get_context <directory> [file_extensions...]")
+    print("Description:")
+    print("  This program processes all human-readable files in the given directory and its subdirectories.")
+    print("  Optionally, you can specify file extensions to filter which files to include.")
+    print("Examples:")
+    print("  python3 -m get_context .         # Process all human-readable files.")
+    print("  python3 -m get_context . .py .txt  # Process only .py and .txt files.")
+
+def main():
+    if len(sys.argv) < 2 or not os.path.isdir(sys.argv[1]):
+        print("Error: Invalid CLI arguments")
+        print_usage()
+        sys.exit(1)
+
+    print(f"Generating context file for directory {os.getcwd()}")
+    directory = sys.argv[1]
+    if len(sys.argv) > 2:
+        extensions = sys.argv[2:]
+        if all(ext.startswith('.') for ext in extensions):
+            print(f"Reading only files with extensions {extensions}")
+            merge_files_in_directory(directory, valid_extensions=extensions)
+        else:
+            print("Error: Invalid CLI arguments")
+            print_usage()
+            sys.exit(1)
+    else:
+        merge_files_in_directory(directory)
+
+
+==================================================
+
+get_context/file_utils.py
+# file_utils.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# This file handles logic for determining if files are human-readable and have valid extensions.
+
+
+import mimetypes
+
+def is_human_readable(file_path):
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if mime_type:
+        return mime_type.startswith('text') or 'application/javascript' in mime_type or 'application/xml' in mime_type
+    return False
+
+def has_valid_extension(file_name, valid_extensions):
+    return any(file_name.endswith(ext) for ext in valid_extensions)
+
+
+==================================================
+
+get_context/ignore_utils.py
+# ignore_utils.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# This file handles logic for loading ignore patterns
+
+import os
+import pathspec
+
+def load_ignore_patterns(filename='.contextignore'):
+    """Load ignore patterns from .contextignore (or .gitignore, if present)."""
+    if os.path.exists(filename):
+        with open(filename, 'r') as file:
+            patterns = file.read().splitlines()
+        patterns = [line for line in patterns if line.strip() and not line.strip().startswith('#')]
+        return pathspec.PathSpec.from_lines(pathspec.patterns.GitWildMatchPattern, patterns)
+    return None
+
+
+def get_ignored_items(file_path):
+    """
+    Reads a file and returns a list of lines that begin with a letter or a '.' or '_' character.
+    Other lines are ignored.
+    """
+    if not os.path.exists(file_path):
+        return []
+
+    ignored_items = []
+    
+    with open(file_path, 'r') as file:
+        for line in file:
+            stripped_line = line.strip()
+            # Check if the line starts with a letter or '.' and ignore comments or empty lines
+            if stripped_line and (stripped_line[0].isalpha() or stripped_line[0] == '.' or stripped_line[0] == "_"):
+                ignored_items.append(stripped_line)
+    
+    return ignored_items
+
+
+==================================================
+
+get_context/merger.py
+# merger.py
+
+# Copyright (c) Aiden R. McCormack. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for more information.
+
+# This file handles the core functionality of the program.
+
+import os
+from .directory_structure import write_directory_structure
+from .file_utils import is_human_readable, has_valid_extension
+from .ignore_utils import load_ignore_patterns, get_ignored_items
+
+def merge_files_in_directory(directory, valid_extensions=None, output_file='context.txt'):
+    # Check if the output file exists, and delete it if it does
+    if os.path.exists(output_file):
+        os.remove(output_file)
+
+    ignore_patterns = None
+    ignore_dir = None  # Track which ignore file is being used
+
+    # Check for .contextignore file, otherwise fall back to .gitignore or default
+    if os.path.exists(".contextignore"):
+        ignore_dir = ".contextignore"
+        ignore_patterns = load_ignore_patterns(ignore_dir)
+    elif os.path.exists(".gitignore"):
+        ignore_dir = ".gitignore"
+        ignore_patterns = load_ignore_patterns(ignore_dir)
+
+    # Default directories to exclude only if no ignore file is found
+    default_exclude_dirs = ['env', 'venv', '__pycache__', '.git', 'build', 'dist']
+
+    # Use default exclusions if no ignore file is present
+    if ignore_patterns is None:
+        print("Using default exclusions for build-related directories:")
+        exclude_dirs = default_exclude_dirs
+    else:
+        print(f"Using ignore patterns from {ignore_dir} for brevity:")
+        exclude_dirs = []  # Don't use default exclusions when an ignore file is present
+        print(get_ignored_items(ignore_dir))
+    
+    # Open the output file in write mode
+    with open(output_file, 'w') as outfile:
+        # Write the directory structure at the top of the file
+        outfile.write("Directory Structure:\n")
+        write_directory_structure(directory, outfile, ignore_patterns=ignore_patterns, exclude_dirs=exclude_dirs)
+
+        # Walk through all files and subdirectories in the provided directory
+        for root, dirs, files in os.walk(directory):
+            # Apply exclusion logic based on ignore patterns or default list
+            if ignore_patterns:
+                dirs[:] = [d for d in dirs if not ignore_patterns.match_file(os.path.join(root, d))]
+            else:
+                # If no ignore file, use the default exclusions
+                dirs[:] = [d for d in dirs if d not in exclude_dirs]
+
+            for file in files:
+                file_path = os.path.join(root, file)
+
+                # Skip the output file (context.txt) itself
+                if file == output_file:
+                    continue
+
+                # Skip files based on ignore patterns
+                if ignore_patterns and ignore_patterns.match_file(file_path):
+                    continue
+
+                # If valid extensions are provided, only include matching files
+                if valid_extensions and not has_valid_extension(file, valid_extensions):
+                    continue
+
+                # Check if the file is human-readable
+                if is_human_readable(file_path):
+                    try:
+                        # Try to open the file and read its contents in UTF-8
+                        with open(file_path, 'r', encoding='utf-8') as infile:
+                            outfile.write(f"{os.path.relpath(file_path, directory)}\n")
+                            outfile.write(infile.read())
+                            outfile.write("\n\n" + "=" * 50 + "\n\n")
+                    except (UnicodeDecodeError, IOError):
+                        # Handle files that cannot be read in UTF-8
+                        outfile.write(f"{os.path.relpath(file_path, directory)}\n")
+                        outfile.write("Text not generated, file is not human-readable or could not be decoded\n\n")
+                        outfile.write("=" * 50 + "\n\n")
+                else:
+                    # Write a message for non-human-readable files
+                    outfile.write(f"{os.path.relpath(file_path, directory)}\n")
+                    outfile.write("Text not generated, file is not human-readable\n\n")
+                    outfile.write("=" * 50 + "\n\n")
+    
+    print(f"Generated 'context.txt' at '{os.getcwd()}/context.txt'")
+
+
+
+==================================================
+
