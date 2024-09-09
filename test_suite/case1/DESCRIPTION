@@ -1,0 +1,313 @@
+# CASE 1 OVERVIEW
+This case directory does not contain a .gitignore or .contextignore file, nor does it contain any
+directories in the program's default ignore list. The subsequent tests assess the program's 
+functionality under the most basic conditions:
+- All files are human-readable
+- All files, except for DESCRIPTION, have extensions that should be recognized as human-readable
+- All files should be included by default
+
+In addition, this case assesses basic logic, such as what gets printed to the console when the
+program runs under various conditions, where the context.txt file actually gets generated, and
+other fundamental attributes.
+
+# TEST CASES
+The following test cases should result in successful output, corresponding with the defined 
+behavior for the program. 
+
+## TEST CASE 1a
+This test case should be run with one command line argument.
+
+This is a basic test case that tests how the program handles:
+- Directory tree building
+- Various code file types (.py, .java, .cpp)
+- Basic functionality of the program on a directory with subdirectories
+
+A successful test result should display the entire contents of the directory case1 and all subdirectories,
+except for this DESCRIPTION file.
+
+
+**Command:**
+```bash
+get_context case1
+```
+
+**Console output:**
+```bash
+Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
+```
+
+**context.txt output:**
+```
+Directory Structure:
+case1/
+	DESCRIPTION
+	case1-0.txt
+	case1-1.py
+	case1_sub0/
+		case1_sub0-0.txt
+		case1_sub0-1.java
+		case1_sub0_sub0/
+			case1_sub0_sub0-0.cpp
+			case1_sub0_sub0-1.txt
+			case1_sub_0_sub0-2.py
+	case1_sub1/
+		case1_sub1-0.txt
+		case1_sub1-1.js
+
+==================================================
+
+case1-1.py
+print("This file does not contain a .contextignore or .gitignore")
+
+==================================================
+
+DESCRIPTION
+Text not generated, file is not human-readable
+
+==================================================
+
+case1-0.txt
+This file contains only human-readable files
+
+==================================================
+
+case1_sub0/case1_sub0-1.java
+
+class case1_sub0_1 {
+    String out = "Does this program output other programming languages by default?";
+}
+
+==================================================
+
+case1_sub0/case1_sub0-0.txt
+This is a textfile in a subirectory
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub0_sub0-1.txt
+This is another text file.
+By default, all contents of this directory should be added to context.txt.
+There is no .contextignore or .gitignore, nor is there any file that matches the default exclusions.
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub_0_sub0-2.py
+print("Does it read all .py files?")
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub0_sub0-0.cpp
+#include <iostream>
+
+int main() {
+    std::cout << "Does this .cpp file get output in a nested subdirectory?" << std::endl;
+}
+
+==================================================
+
+case1_sub1/case1_sub1-0.txt
+This is a textfile in the second subdirectory with a depth of 1
+
+==================================================
+
+case1_sub1/case1_sub1-1.js
+console.log("Screw it, does it work with JavaScript?");
+
+==================================================
+```
+
+
+## TEST CASE 1b
+This test should be run with .py listed as a command-line argument.
+
+This test checks command-line argument logic. Specifically, it tests:
+- does the program accept a second cl argument
+- does the second argument work as anticipated
+
+A successful test result should resemble **CASE 1a**, but only include text from Python files.
+
+**Command:**
+```bash
+get_context case1 .py
+```
+
+**Console output:**
+```bash
+Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Reading only files with extensions ['.py']
+Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
+```
+
+**context.txt output:**
+```
+Directory Structure:
+case1/
+	DESCRIPTION
+	case1-0.txt
+	case1-1.py
+	case1_sub0/
+		case1_sub0-0.txt
+		case1_sub0-1.java
+		case1_sub0_sub0/
+			case1_sub0_sub0-0.cpp
+			case1_sub0_sub0-1.txt
+			case1_sub_0_sub0-2.py
+	case1_sub1/
+		case1_sub1-0.txt
+		case1_sub1-1.js
+
+==================================================
+
+case1-1.py
+print("This file does not contain a .contextignore or .gitignore")
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub_0_sub0-2.py
+print("Does it read all .py files?")
+
+==================================================
+```
+
+## TEST CASE 1c
+This test should be run with .py and .txt listed as command-line arguments.
+
+This test is similar to **TEST CASE 1b**, but the functionality is now being tested with multiple
+command-line arguments.
+
+A successful result should list the entire directory structure, but only display text from
+files ending in .py and .txt across all subdirectories.
+
+**Command:**
+```bash
+get_context case1 .py .txt
+```
+
+**Console output:**
+```bash
+Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Reading only files with extensions ['.py', '.txt']
+Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
+```
+
+**context.txt output:**
+```
+Directory Structure:
+case1/
+	DESCRIPTION
+	case1-0.txt
+	case1-1.py
+	case1_sub0/
+		case1_sub0-0.txt
+		case1_sub0-1.java
+		case1_sub0_sub0/
+			case1_sub0_sub0-0.cpp
+			case1_sub0_sub0-1.txt
+			case1_sub_0_sub0-2.py
+	case1_sub1/
+		case1_sub1-0.txt
+		case1_sub1-1.js
+
+==================================================
+
+case1-1.py
+print("This file does not contain a .contextignore or .gitignore")
+
+==================================================
+
+case1-0.txt
+This file contains only human-readable files
+
+==================================================
+
+case1_sub0/case1_sub0-0.txt
+This is a textfile in a subirectory
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub0_sub0-1.txt
+This is another text file.
+By default, all contents of this directory should be added to context.txt.
+There is no .contextignore or .gitignore, nor is there any file that matches the default exclusions.
+
+==================================================
+
+case1_sub0/case1_sub0_sub0/case1_sub_0_sub0-2.py
+print("Does it read all .py files?")
+
+==================================================
+
+case1_sub1/case1_sub1-0.txt
+This is a textfile in the second subdirectory with a depth of 1
+```
+
+## TEST CASE 1d
+This test should be run with .ts as a command-line argument.
+
+This tests the behavior of the program when it is given a valid command-line argument, but
+for a file that is not listed in the directory.
+
+A successful test result should just be a context file that contains the directory structure and
+no additional text.
+
+**Command:**
+```bash
+get_context case1 .ts
+```
+
+**Console output:**
+```bash
+Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Reading only files with extensions ['.ts']
+Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
+```
+
+**context.txt output:**
+```
+Directory Structure:
+case1/
+	DESCRIPTION
+	case1-0.txt
+	case1-1.py
+	case1_sub0/
+		case1_sub0-0.txt
+		case1_sub0-1.java
+		case1_sub0_sub0/
+			case1_sub0_sub0-0.cpp
+			case1_sub0_sub0-1.txt
+			case1_sub_0_sub0-2.py
+	case1_sub1/
+		case1_sub1-0.txt
+		case1_sub1-1.js
+
+==================================================
+```
+
+# ERROR CASES
+The following test cases should NOT result in successful output. These tests demonstrate how the
+program handles errors or undefined inputs under various conditions.
+
+## ERROR CASE 1a
+This test case should be run with no command line arguments.
+
+This should result in the program displaying the usage guide to the user. The context.txt file
+should not be generated.
+
+**Command:**
+```bash
+get_context
+```
+
+**Console output:**
+```bash
+Error: Invalid CLI arguments
+Usage:
+  python3 -m get_context <directory> [file_extensions...]
+Description:
+  This program processes all human-readable files in the given directory and its subdirectories.
+  Optionally, you can specify file extensions to filter which files to include.
+Examples:
+  python3 -m get_context .         # Process all human-readable files.
+  python3 -m get_context . .py .txt  # Process only .py and .txt files.
+```

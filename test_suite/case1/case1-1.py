@@ -1,0 +1,1 @@
+print("This file does not contain a .contextignore or .gitignore")

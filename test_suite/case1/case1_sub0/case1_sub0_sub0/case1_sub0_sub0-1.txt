@@ -1,0 +1,3 @@
+This is another text file.
+By default, all contents of this directory should be added to context.txt.
+There is no .contextignore or .gitignore, nor is there any file that matches the default exclusions.

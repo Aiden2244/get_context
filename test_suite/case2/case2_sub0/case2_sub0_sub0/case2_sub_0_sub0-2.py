@@ -1,0 +1,1 @@
+print("Does it read all .py files?")

@@ -1,0 +1,1 @@
+console.log("Screw it, does it work with JavaScript?");
