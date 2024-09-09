@@ -1,0 +1,150 @@
+# CASE 1 OVERVIEW
+[case description]  # Human editable section
+- [case details here]
+
+# TEST CASES
+The following test cases should result in successful output, corresponding with the defined behavior for the program.
+
+## TEST CASE 1a
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+A successful test result should [do what]  # Human editable section
+
+**Command:**
+```bash
+get_context case1
+```
+**Console output:**
+```bash
+[console output here]
+```
+**context.txt output:**
+```
+[context output here]
+```
+
+## TEST CASE 1b
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+A successful test result should [do what]  # Human editable section
+
+**Command:**
+```bash
+get_context case1 .py
+```
+**Console output:**
+```bash
+[console output here]
+```
+**context.txt output:**
+```
+[context output here]
+```
+
+## TEST CASE 1c
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+A successful test result should [do what]  # Human editable section
+
+**Command:**
+```bash
+get_context case1 .py .txt
+```
+**Console output:**
+```bash
+[console output here]
+```
+**context.txt output:**
+```
+[context output here]
+```
+
+## TEST CASE 1d
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+A successful test result should [do what]  # Human editable section
+
+**Command:**
+```bash
+get_context case1 .ts
+```
+**Console output:**
+```bash
+[console output here]
+```
+**context.txt output:**
+```
+[context output here]
+```
+
+# ERROR CASES
+The following test cases should NOT result in successful output. These tests demonstrate how the program handles errors or undefined inputs under various conditions.
+
+## ERROR CASE 1a
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+This should result in [what]  # Human editable section
+
+**Command:**
+```bash
+get_context
+```
+**Console output:**
+```bash
+[console output here]
+```
+## ERROR CASE 1b
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+This should result in [what]  # Human editable section
+
+**Command:**
+```bash
+get_context py
+```
+**Console output:**
+```bash
+[console output here]
+```
+## ERROR CASE 1c
+This test case should be run [how]
+
+[this tests]  # Human editable section
+- [list test conditions here]
+
+This should result in [what]  # Human editable section
+
+**Command:**
+```bash
+get_context case1 .py txt
+```
+**Console output:**
+```bash
+[console output here]
+```
+**Command:**
+```bash
+get_context case1 txt .py
+```
+**Console output:**
+```bash
+[console output here]
+```

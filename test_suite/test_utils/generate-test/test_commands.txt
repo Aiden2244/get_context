@@ -1,0 +1,9 @@
+1
+get_context case1
+get_context case1 .py
+get_context case1 .py .txt
+get_context case1 .ts
+
+get_context
+get_context py
+get_context case1 .py txt, get_context case1 txt .py
