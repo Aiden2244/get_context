@@ -26,7 +26,7 @@ This will generate a text file containing the directory structure and the conten
 
 ## Disclaimer
 This program is still in development and is currently buggy. Further testing and implementation is required before it can be used as a
-fully-fledged, reliable product. **For this reason, it is currently unavailable as a pip package.** 
+fully-fledged, reliable product.
 
 ## Attributions
 This program uses both Python’s built-in libraries and external libraries for various functionalities:

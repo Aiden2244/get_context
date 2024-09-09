@@ -16,7 +16,7 @@ setup(
 
     # Package information
     name='get_context',  # the name of the package
-    version='0.1.0',  # the current version
+    version='0.1.1',  # the current version
     description='Generates a single text document for a directory',  # short description
     
     # Read the contents of your README.md file for a full-length description
