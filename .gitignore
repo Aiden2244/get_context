@@ -77,3 +77,4 @@ instance/
 # user-defined
 context.txt
 known-issues.txt
+test_dir

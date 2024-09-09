@@ -76,6 +76,9 @@ def merge_files_in_directory(directory, valid_extensions=None, output_file='cont
     outfile.write("Directory Structure:\n")
     write_directory_structure(directory, outfile, ignore_patterns=ignore_patterns, exclude_dirs=exclude_dirs)
 
+    outfile.write("\n")
+    outfile.write("=" * 50 + "\n\n")
+
     # Walk through all files and subdirectories
     for root, dirs, files in os.walk(directory):
         exclude_directories(dirs, root, ignore_patterns, exclude_dirs)

@@ -7,64 +7,43 @@
 
 import os
 
-def write_directory_structure(directory, outfile, max_items=20, ignore_patterns=None, exclude_dirs=None):
-    """Orchestrates writing the directory structure to the output file."""
-    for root, dirs, files in os.walk(directory):
-        relative_root = os.path.relpath(root, directory)
-        level = relative_root.count(os.sep)
-        indent = ' ' * 4 * level
-        current_dir = os.path.basename(root) or os.path.basename(directory)
+def write_directory_structure(directory, outfile, indent_level=0, ignore_patterns=None, exclude_dirs=None):
+    """Recursively write the directory structure to the output file."""
+    indent = '\t' * indent_level  # Indentation for the current level
+    
+    # Write the current directory name at the top level
+    if indent_level == 0:
+        top_level_dir = os.path.basename(os.path.abspath(directory))
+        outfile.write(f"{top_level_dir}/\n")
 
-        # Determine whether the current directory should be excluded
-        if should_exclude_directory(relative_root, current_dir, ignore_patterns, exclude_dirs):
-            write_directory_entry(outfile, current_dir, indent, excluded=True)
-            dirs[:] = []  # Prevent os.walk from traversing excluded directories
-            continue
+    # List contents of the directory
+    try:
+        items = sorted(os.listdir(directory))  # Sort to ensure consistent ordering
+    except OSError as e:
+        outfile.write(f"{indent}Error accessing directory: {e}\n")
+        return
 
-        # Write the directory entry
-        write_directory_entry(outfile, current_dir, indent, excluded=False)
+    for item in items:
+        item_path = os.path.join(directory, item)
 
-        # Display subdirectories and files
-        sub_indent = ' ' * 4 * (level + 1)
-        items = dirs + files
-        limited_items = limit_display_items(items, max_items)
-
-        for item in limited_items:
-            item_path = os.path.join(root, item)
-            relative_item_path = os.path.relpath(item_path, directory)
-
-            if os.path.isdir(item_path):
-                # Check if the subdirectory should be excluded
-                if should_exclude_directory(relative_item_path, item, ignore_patterns, exclude_dirs):
-                    write_directory_entry(outfile, item, sub_indent, excluded=True)
-                    dirs.remove(item)
-                else:
-                    write_directory_entry(outfile, item, sub_indent, excluded=False)
+        # Check if the item is a directory or file
+        if os.path.isdir(item_path):
+            # Check if this directory should be excluded
+            relative_item_path = os.path.relpath(item_path, os.path.dirname(directory))
+            if should_exclude(relative_item_path, ignore_patterns, exclude_dirs):
+                outfile.write(f"{indent}\t{item}/ (contents omitted)\n")
             else:
-                write_directory_entry(outfile, item, sub_indent, excluded=False)
-
-    outfile.write("\n\n" + "=" * 50 + "\n\n")
-
-
-def should_exclude_directory(relative_path, directory_name, ignore_patterns, exclude_dirs):
-    """Determine whether a directory should be excluded based on ignore patterns or default exclusions."""
-    if ignore_patterns and ignore_patterns.match_file(relative_path):
-        return True
-    if exclude_dirs and directory_name in exclude_dirs:
-        return True
-    return False
+                outfile.write(f"{indent}\t{item}/\n")
+                # Recursively call the function for subdirectories
+                write_directory_structure(item_path, outfile, indent_level + 1, ignore_patterns, exclude_dirs)
+        else:
+            # It's a file, just write it
+            outfile.write(f"{indent}\t{item}\n")
 
 
-def write_directory_entry(outfile, entry_name, indent, excluded=False):
-    """Write a directory or file entry to the output file."""
-    if excluded:
-        outfile.write(f"{indent}{entry_name}/ (contents omitted)\n")
-    else:
-        outfile.write(f"{indent}{entry_name}/\n")
-
-
-def limit_display_items(items, max_items):
-    """Limit the number of displayed items in a directory."""
-    if len(items) > max_items:
-        return items[:max_items] + [f"... (truncated {len(items) - max_items} more items)"]
-    return items
+def should_exclude(relative_path, ignore_patterns, exclude_dirs):
+    """Determine if a directory or file should be excluded based on ignore patterns."""
+    normalized_path = relative_path + "/" if os.path.isdir(relative_path) else relative_path
+    return (ignore_patterns and ignore_patterns.match_file(normalized_path)) or (
+        exclude_dirs and any(ex_dir in normalized_path for ex_dir in exclude_dirs)
+    )

@@ -1,6 +1,4 @@
 # Known Issues
-### Structural
-- "merger.py" could afford some refactoring
 
 ### File Exclusion
 - Commented lines (beggining with a #) are not properly processed in ".contextignore"
