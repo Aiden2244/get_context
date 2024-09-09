@@ -33,7 +33,7 @@ get_context case1
 
 **Console output:**
 ```bash
-Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Generating context file for directory case1
 Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
 ```
 
@@ -134,7 +134,7 @@ get_context case1 .py
 
 **Console output:**
 ```bash
-Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Generating context file for directory case1
 Reading only files with extensions ['.py']
 Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
 ```
@@ -186,7 +186,7 @@ get_context case1 .py .txt
 
 **Console output:**
 ```bash
-Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Generating context file for directory case1
 Reading only files with extensions ['.py', '.txt']
 Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
 ```
@@ -258,7 +258,7 @@ get_context case1 .ts
 
 **Console output:**
 ```bash
-Generating context file for directory /Users/aiden/Code/personal/get_context/test_suite
+Generating context file for directory case1
 Reading only files with extensions ['.ts']
 Generated 'context.txt' at '/Users/aiden/Code/personal/get_context/test_suite/context.txt'
 ```
@@ -303,11 +303,84 @@ get_context
 ```bash
 Error: Invalid CLI arguments
 Usage:
-  python3 -m get_context <directory> [file_extensions...]
+  get_context <directory> [file_extensions...]
 Description:
   This program processes all human-readable files in the given directory and its subdirectories.
   Optionally, you can specify file extensions to filter which files to include.
 Examples:
-  python3 -m get_context .         # Process all human-readable files.
-  python3 -m get_context . .py .txt  # Process only .py and .txt files.
+  get_context .         # Process all human-readable files.
+  get_context . .py .txt  # Process only .py and .txt files.
+```
+
+## ERROR CASE 1b
+This test case should be run with a single, invalid cl argument.
+
+Invalid cl arguments are any arguments that do not begin with a '.' character.
+
+This should result in the program displaying the error and the program usage guide to the user. 
+The context.txt file should not be generated.
+
+**Command:**
+```bash
+get_context py
+```
+
+**Console output:**
+```bash
+Error: Invalid CLI arguments
+Usage:
+  get_context <directory> [file_extensions...]
+Description:
+  This program processes all human-readable files in the given directory and its subdirectories.
+  Optionally, you can specify file extensions to filter which files to include.
+Examples:
+  get_context .         # Process all human-readable files.
+  get_context . .py .txt  # Process only .py and .txt files.
+```
+
+## ERROR CASE 1c
+This test case should be run with a mix of invalid and valid command-line arguments.
+
+Current behavior dictates that the presense of a single invalid cl argument terminates the 
+program, even if there are valid cl arguments present.
+
+This should result in the program displaying the error and the program usage guide to the user. 
+The context.txt file should not be generated.
+
+**Command:**
+```bash
+get_context case1 .py txt
+```
+
+**Console output:**
+```bash
+Generating context file for directory case1
+Error: Invalid CLI arguments
+Usage:
+  get_context <directory> [file_extensions...]
+Description:
+  This program processes all human-readable files in the given directory and its subdirectories.
+  Optionally, you can specify file extensions to filter which files to include.
+Examples:
+  get_context .         # Process all human-readable files.
+  get_context . .py .txt  # Process only .py and .txt files.
+```
+
+**Command:**
+```bash
+get_context case1 txt .py
+```
+
+**Console output:**
+```bash
+Generating context file for directory case1
+Error: Invalid CLI arguments
+Usage:
+  get_context <directory> [file_extensions...]
+Description:
+  This program processes all human-readable files in the given directory and its subdirectories.
+  Optionally, you can specify file extensions to filter which files to include.
+Examples:
+  get_context .         # Process all human-readable files.
+  get_context . .py .txt  # Process only .py and .txt files.
 ```

@@ -1,0 +1,73 @@
+# CASE [case] OVERVIEW
+[case description]
+- [case details here]
+
+[some more information]
+
+
+
+
+
+
+# TEST CASES
+The following test cases should result in successful output, corresponding with the defined 
+behavior for the program. 
+
+
+
+
+
+## TEST CASE [case][test]
+This test case should be run [how]
+
+[this tests]
+- [list test conditions here]
+
+A successful test result should [do what]
+
+
+**Command:**
+```bash
+[command]
+```
+
+**Console output:**
+```bash
+[console output here]
+```
+
+**context.txt output:**
+```
+[context output here]
+```
+
+[as many test cases as you need]
+
+
+
+
+
+
+# ERROR CASES
+The following test cases should NOT result in successful output. These tests demonstrate how the
+program handles errors or undefined inputs under various conditions.
+
+## ERROR CASE [case][test]
+This test case should be run [how]
+
+[this tests]
+- [list test conditions here]
+
+This should result in [what]
+
+**Command:**
+```bash
+[command]
+```
+
+**Console output:**
+```bash
+[console output here]
+```
+
+[as many test cases as you need]
