@@ -2,14 +2,18 @@ import re
 import sys
 
 def get_line_number(content, position):
+    """Helper function to find the line number given a position in the file content."""
     return content.count('\n', 0, position) + 1
 
-def parse_description(content):
+def parse(content):
+    """Extracts both commands and test case labels from the content."""
     combined_list = []
+    context_output_list = []
 
-    # Regular expressions to match commands and test case labels
+    # Regular expression to match commands, test case labels, and output
     command_pattern = re.compile(r'\*\*Command:\*\*\s*\n```bash\s*\n(.*?)\n```', re.DOTALL)
     case_pattern = re.compile(r'## (TEST CASE|ERROR CASE) (\d+[a-zA-Z])', re.DOTALL)
+    context_output_pattern = re.compile(r'\*\*context\.txt output:\*\*\s*```.*?\n(.*?)\n```', re.DOTALL)
 
     # Extract commands
     for match in command_pattern.finditer(content):
@@ -24,19 +28,29 @@ def parse_description(content):
         line_number = get_line_number(content, match.start())  # Get line number
         combined_list.append((line_number, [case_type, case_label]))
 
-    # Sort the combined list by line number and return only the content (without line numbers)
-    return [content for _, content in sorted(combined_list, key=lambda x: x[0])]
+    # Extract context.txt outputs
+    for match in context_output_pattern.finditer(content):
+        context_output = match.group(1).strip()  # Get the entire context.txt output as a string
+        context_output_list.append(context_output)
+
+    # Sort the combined list by line number and return the lists
+    sorted_combined_list = [content for _, content in sorted(combined_list, key=lambda x: x[0])]
+
+    return sorted_combined_list, context_output_list
 
 if __name__ == "__main__":
-    # Read file content once
     file_path = sys.argv[1]
+
     with open(file_path, 'r') as file:
         content = file.read()
 
-    # Extract and combine the commands and test cases
-    combined = parse_description(content)
+    combined_list, context_output_list = parse(content)
 
-    # Print the combined list
-    print("\nCombined List:")
-    for entry in combined:
-        print(entry)
+    print("Combined List:")
+    for item in combined_list:
+        print(item)
+
+    print("\nContext.txt Output List:")
+    for i in range(len(context_output_list)):
+        print(f"\n\ncontext.txt output {i}: ")
+        print(context_output_list[i])

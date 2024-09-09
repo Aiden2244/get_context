@@ -1,27 +1,41 @@
 import subprocess
 import sys
 import os
-from parse_description import parse_description
+from parse_description import parse
 
-def run_command(command_list):
+def run_command(command_list, context_output_from_list):
     try:
         # Run the command and print output if success
         result = subprocess.run(command_list, check=True, capture_output=True, text=True)
-        print(f"Command '{' '.join(command_list)}' executed successfully.")
+        print(f"Command '{' '.join(command_list)}' EXECUTED SUCCESSFULLY.")
         print("\nConsole Output:")
         print(result.stdout)
-        print("Contents of context.txt: \n")
-        print("v" * 30 + "\n")
-        print(get_context_output_as_string())
-        print("^" * 30 + "\n")
+
+        # print("Contents of context.txt FROM TEST:\n")
+        # print("v" * 30 + "\n")
+        # print(get_context_output_from_test())
+        # print("^" * 30 + "\n")
+
+        # print(f"Contents of context.txt FROM LIST (output index {output_index}):\n")
+        # print("v" * 30 + "\n")
+        # print(context_output_from_list)
+        # print("^" * 30 + "\n")
+
+        result = "PASS" if get_context_output_from_test().strip() == context_output_from_list.strip() else "FAIL"
+        print(f"\nTEST RESULT: {result}")
+
+        return True
     except subprocess.CalledProcessError as e:
-        # Print the error but continue to the next command
-        print(f"Error executing command: {' '.join(command_list)}")
-        print("\nError message: ")
+        print(f"ERROR EXECUTING COMMAND: {' '.join(command_list)}")
+        print("\nConsole output: ")
         print(f"{e.stdout}")
+        print("\nError message: ")
+        print(f"{e.stderr if not e.stderr == "" else "No error message"}")
+
+        return False
 
 
-def get_context_output_as_string(directory='.'):
+def get_context_output_from_test(directory='.'):
     context_file_path = os.path.join(directory, 'context.txt')
 
     # Check if the context.txt file exists
@@ -33,6 +47,7 @@ def get_context_output_as_string(directory='.'):
         # File not found, return None
         return None
 
+
 def main():
     # Ensure a markdown file is provided as an argument
     if len(sys.argv) < 2:
@@ -43,17 +58,20 @@ def main():
     with open(description_file, 'r') as file:
         content = file.read()
 
-    combined_list = parse_description(content)
+    combined_list, context_output_list = parse(content)
 
+    output_index = 0
     for item in combined_list:
         if item[0] in ["TEST CASE", "ERROR CASE"]:
             print("*" * 50 + "\n")
             print("*" * 50 + "\n")
             print(f"{' '.join(item)}")
         else:
-            # Otherwise, treat it as a command and run it
+            print("-----")
             print(f"Running command: {' '.join(item)}")
-            run_command(item)
+            success = run_command(item, context_output_list[output_index])
+            if success: output_index += 1
+            output_index = min(output_index, len(context_output_list)-1)
             print()
     
     file.close()

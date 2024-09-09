@@ -11,13 +11,13 @@ from .merger import merge_files_in_directory
 
 def print_usage():
     print("Usage:")
-    print("  python3 -m get_context <directory> [file_extensions...]")
+    print("  get_context <directory> [file_extensions...]")
     print("Description:")
     print("  This program processes all human-readable files in the given directory and its subdirectories.")
     print("  Optionally, you can specify file extensions to filter which files to include.")
     print("Examples:")
-    print("  python3 -m get_context .         # Process all human-readable files.")
-    print("  python3 -m get_context . .py .txt  # Process only .py and .txt files.")
+    print("  get_context .         # Process all human-readable files.")
+    print("  get_context . .py .txt  # Process only .py and .txt files.")
 
 def main():
     if len(sys.argv) < 2 or not os.path.isdir(sys.argv[1]):
@@ -25,7 +25,7 @@ def main():
         print_usage()
         sys.exit(1)
 
-    print(f"Generating context file for directory {os.getcwd()}")
+    print(f"Generating context file for directory {sys.argv[1]}")
     directory = sys.argv[1]
     if len(sys.argv) > 2:
         extensions = sys.argv[2:]
