@@ -7,6 +7,11 @@
 
 from setuptools import setup, find_packages
 
+# Read the requirements from requirements.txt
+def read_requirements():
+    with open('requirements.txt') as req_file:
+        return req_file.read().splitlines()
+
 setup(
 
     # Package information
@@ -43,7 +48,7 @@ setup(
     packages=find_packages(),  # finds all Python packages recursively in the project
 
     # Dependencies: external libraries your project needs (empty here)
-    install_requires=[],  # no external dependencies for this project
+    install_requires=read_requirements(),
 
     # Additional metadata (optional, you can add if needed)
     include_package_data=True,  # include non-Python files like README.md

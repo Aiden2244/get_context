@@ -73,3 +73,7 @@ instance/
 
 # VS Code
 .vscode/
+
+# user-defined
+context.txt
+known-issues.txt

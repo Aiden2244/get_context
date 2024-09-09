@@ -3,39 +3,109 @@ Directory Structure:
     env/
     get_context.egg-info/
     get_context/
-    .contextignore
-    LICENSE
-    MANIFEST.in
-    README.md
-    setup.py
-    .gitignore
-    context.txt
-    env/
-        bin/ (contents omitted)
-        include/ (contents omitted)
-        lib/ (contents omitted)
-        pyvenv.cfg
-    get_context.egg-info/
-        PKG-INFO
-        SOURCES.txt
-        entry_points.txt
-        top_level.txt
-        dependency_links.txt
-    get_context/
-        __pycache__/
-        directory_structure.py
-        __init__.py
-        cli.py
-        file_utils.py
-        ignore_utils.py
-        merger.py
-        __pycache__/
-            ignore_utils.cpython-312.pyc
-            cli.cpython-312.pyc
-            merger.cpython-312.pyc
-            __init__.cpython-312.pyc
-            file_utils.cpython-312.pyc
-            directory_structure.cpython-312.pyc
+    .git/ (contents omitted)
+    .contextignore/
+    LICENSE/
+    requirements.txt/
+    MANIFEST.in/
+    README.md/
+    setup.py/
+    .gitignore/
+    known_issues.md/
+    context.txt/
+env/
+    bin/ (contents omitted)
+    include/ (contents omitted)
+    lib/ (contents omitted)
+    pyvenv.cfg/
+get_context.egg-info/
+    PKG-INFO/
+    SOURCES.txt/
+    entry_points.txt/
+    requires.txt/
+    top_level.txt/
+    dependency_links.txt/
+get_context/
+    __pycache__/
+    directory_structure.py/
+    __init__.py/
+    cli.py/
+    file_utils.py/
+    ignore_utils.py/
+    merger.py/
+    __pycache__/
+        ignore_utils.cpython-312.pyc/
+        cli.cpython-312.pyc/
+        merger.cpython-312.pyc/
+        __init__.cpython-312.pyc/
+        file_utils.cpython-312.pyc/
+        directory_structure.cpython-312.pyc/
+
+
+==================================================
+
+.contextignore
+Text not generated, file is not human-readable
+
+==================================================
+
+LICENSE
+Text not generated, file is not human-readable
+
+==================================================
+
+requirements.txt
+pathspec>=0.9.0
+
+==================================================
+
+MANIFEST.in
+include README.md
+include LICENSE
+
+==================================================
+
+README.md
+# GET CONTEXT
+
+## About
+**Get Context** is a directory context generator designed to provide a structured overview of the contents of a directory and its subdirectories. It generates a single text file that lists the directory structure and the contents of text or program files, while excluding non-human-readable files such as binary or multimedia files. This tool is particularly useful for organizing and reviewing large codebases or data directories. It can also
+be used to easily pass the contents of a directory to a large language AI model for further analysis.
+
+## Installation and Usage
+This program is available as the Python package "get_context". If Python is installed on your system, you should be able to run:
+
+```
+pip install get_context
+```
+After the package is installed, the program can be run on the command line by typing:
+
+```
+get_context <directory> [file_extensions...]
+```
+
+The program takes the directory as the first argument and can optionally filter files by specified extensions. For example:
+
+```
+get_context . .py .txt
+```
+
+This will generate a text file containing the directory structure and the contents of `.py` and `.txt` files within the specified directory.
+
+## Disclaimer
+This program is still in development and is currently buggy. Further testing and implementation is required before it can be used as a
+fully-fledged, reliable product. **For this reason, it is currently unavailable as a pip package.** 
+
+## Attributions
+This program uses both Python’s built-in libraries and external libraries for various functionalities:
+
+* **File and Directory Handling:** The program uses Python’s built-in `os` and `mimetypes` libraries for file and directory manipulation.
+* **Text Encoding and Decoding:** The program uses Python's built-in `codecs` and `io` libraries to handle different text encodings.
+* **Pattern Matching:** The program uses the external `pathspec` library to handle file exclusion patterns, specifically for interpreting and applying `.gitignore`-style patterns.
+
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
 ==================================================
@@ -49,6 +119,11 @@ setup.py
 # This file keeps track of the metadata for the package.
 
 from setuptools import setup, find_packages
+
+# Read the requirements from requirements.txt
+def read_requirements():
+    with open('requirements.txt') as req_file:
+        return req_file.read().splitlines()
 
 setup(
 
@@ -86,11 +161,77 @@ setup(
     packages=find_packages(),  # finds all Python packages recursively in the project
 
     # Dependencies: external libraries your project needs (empty here)
-    install_requires=[],  # no external dependencies for this project
+    install_requires=read_requirements(),
 
     # Additional metadata (optional, you can add if needed)
     include_package_data=True,  # include non-Python files like README.md
 )
+
+
+
+==================================================
+
+.gitignore
+Text not generated, file is not human-readable
+
+==================================================
+
+known_issues.md
+# Known Issues
+### Structural
+- "merger.py" could afford some refactoring
+
+### File Exclusion
+- Commented lines (beggining with a #) are not properly processed in ".contextignore"
+- __pycache__ is still being included in "context.txt" file, even when listed in ".contextignore"
+
+==================================================
+
+get_context.egg-info/PKG-INFO
+Text not generated, file is not human-readable
+
+==================================================
+
+get_context.egg-info/SOURCES.txt
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+get_context/__init__.py
+get_context/cli.py
+get_context/directory_structure.py
+get_context/file_utils.py
+get_context/ignore_utils.py
+get_context/merger.py
+get_context.egg-info/PKG-INFO
+get_context.egg-info/SOURCES.txt
+get_context.egg-info/dependency_links.txt
+get_context.egg-info/entry_points.txt
+get_context.egg-info/requires.txt
+get_context.egg-info/top_level.txt
+
+==================================================
+
+get_context.egg-info/entry_points.txt
+[console_scripts]
+get_context = get_context.cli:main
+
+
+==================================================
+
+get_context.egg-info/requires.txt
+pathspec>=0.9.0
+
+
+==================================================
+
+get_context.egg-info/top_level.txt
+get_context
+
+
+==================================================
+
+get_context.egg-info/dependency_links.txt
 
 
 
@@ -107,59 +248,66 @@ get_context/directory_structure.py
 import os
 
 def write_directory_structure(directory, outfile, max_items=20, ignore_patterns=None, exclude_dirs=None):
-    """Write the directory structure as plain text to the output file, omitting contents of excluded directories."""
+    """Orchestrates writing the directory structure to the output file."""
     for root, dirs, files in os.walk(directory):
-        # Determine the indentation level based on directory depth
-        level = root.replace(directory, '').count(os.sep)
+        relative_root = os.path.relpath(root, directory)
+        level = relative_root.count(os.sep)
         indent = ' ' * 4 * level
-
-        # Get the base name of the current directory
         current_dir = os.path.basename(root) or os.path.basename(directory)
 
-        # Check if the current directory should be excluded
-        is_excluded = False
-        if ignore_patterns and ignore_patterns.match_file(root):
-            is_excluded = True
-        elif exclude_dirs and current_dir in exclude_dirs:
-            is_excluded = True
+        # Determine whether the current directory should be excluded
+        if should_exclude_directory(relative_root, current_dir, ignore_patterns, exclude_dirs):
+            write_directory_entry(outfile, current_dir, indent, excluded=True)
+            dirs[:] = []  # Prevent os.walk from traversing excluded directories
+            continue
 
-        # Write the directory name with "(contents omitted)" if excluded
-        if is_excluded:
-            outfile.write(f"{indent}{current_dir}/ (contents omitted)\n")
-            dirs[:] = []  # Do not traverse subdirectories of this directory
-            continue  # Skip to the next iteration
+        # Write the directory entry
+        write_directory_entry(outfile, current_dir, indent, excluded=False)
 
-        else:
-            outfile.write(f"{indent}{current_dir}/\n")
-
-        # Prepare subdirectories and files for display
+        # Display subdirectories and files
         sub_indent = ' ' * 4 * (level + 1)
         items = dirs + files
+        limited_items = limit_display_items(items, max_items)
 
-        # Limit the number of displayed items in each directory
-        for i, item in enumerate(items):
-            if i >= max_items:
-                outfile.write(f"{sub_indent}... (truncated {len(items) - max_items} more items)\n")
-                break
-
+        for item in limited_items:
             item_path = os.path.join(root, item)
+            relative_item_path = os.path.relpath(item_path, directory)
+
             if os.path.isdir(item_path):
                 # Check if the subdirectory should be excluded
-                if ignore_patterns and ignore_patterns.match_file(item_path):
-                    outfile.write(f"{sub_indent}{item}/ (contents omitted)\n")
-                    dirs.remove(item)  # Remove from dirs to prevent os.walk from traversing it
-                elif exclude_dirs and item in exclude_dirs:
-                    outfile.write(f"{sub_indent}{item}/ (contents omitted)\n")
-                    dirs.remove(item)  # Remove from dirs to prevent os.walk from traversing it
+                if should_exclude_directory(relative_item_path, item, ignore_patterns, exclude_dirs):
+                    write_directory_entry(outfile, item, sub_indent, excluded=True)
+                    dirs.remove(item)
                 else:
-                    outfile.write(f"{sub_indent}{item}/\n")
+                    write_directory_entry(outfile, item, sub_indent, excluded=False)
             else:
-                outfile.write(f"{sub_indent}{item}\n")
+                write_directory_entry(outfile, item, sub_indent, excluded=False)
 
     outfile.write("\n\n" + "=" * 50 + "\n\n")
 
 
+def should_exclude_directory(relative_path, directory_name, ignore_patterns, exclude_dirs):
+    """Determine whether a directory should be excluded based on ignore patterns or default exclusions."""
+    if ignore_patterns and ignore_patterns.match_file(relative_path):
+        return True
+    if exclude_dirs and directory_name in exclude_dirs:
+        return True
+    return False
 
+
+def write_directory_entry(outfile, entry_name, indent, excluded=False):
+    """Write a directory or file entry to the output file."""
+    if excluded:
+        outfile.write(f"{indent}{entry_name}/ (contents omitted)\n")
+    else:
+        outfile.write(f"{indent}{entry_name}/\n")
+
+
+def limit_display_items(items, max_items):
+    """Limit the number of displayed items in a directory."""
+    if len(items) > max_items:
+        return items[:max_items] + [f"... (truncated {len(items) - max_items} more items)"]
+    return items
 
 
 ==================================================
@@ -294,85 +442,97 @@ from .directory_structure import write_directory_structure
 from .file_utils import is_human_readable, has_valid_extension
 from .ignore_utils import load_ignore_patterns, get_ignored_items
 
-def merge_files_in_directory(directory, valid_extensions=None, output_file='context.txt'):
-    # Check if the output file exists, and delete it if it does
+
+def setup_output_file(output_file):
+    """Set up the output file by removing the old file if it exists."""
     if os.path.exists(output_file):
         os.remove(output_file)
+    return open(output_file, 'w')
 
-    ignore_patterns = None
-    ignore_dir = None  # Track which ignore file is being used
 
-    # Check for .contextignore file, otherwise fall back to .gitignore or default
+def get_ignore_patterns():
+    """Get ignore patterns from .contextignore or .gitignore, if available."""
     if os.path.exists(".contextignore"):
         ignore_dir = ".contextignore"
-        ignore_patterns = load_ignore_patterns(ignore_dir)
     elif os.path.exists(".gitignore"):
         ignore_dir = ".gitignore"
-        ignore_patterns = load_ignore_patterns(ignore_dir)
-
-    # Default directories to exclude only if no ignore file is found
-    default_exclude_dirs = ['env', 'venv', '__pycache__', '.git', 'build', 'dist']
-
-    # Use default exclusions if no ignore file is present
-    if ignore_patterns is None:
-        print("Using default exclusions for build-related directories:")
-        exclude_dirs = default_exclude_dirs
     else:
-        print(f"Using ignore patterns from {ignore_dir} for brevity:")
-        exclude_dirs = []  # Don't use default exclusions when an ignore file is present
-        print(get_ignored_items(ignore_dir))
-    
-    # Open the output file in write mode
-    with open(output_file, 'w') as outfile:
-        # Write the directory structure at the top of the file
-        outfile.write("Directory Structure:\n")
-        write_directory_structure(directory, outfile, ignore_patterns=ignore_patterns, exclude_dirs=exclude_dirs)
+        return None, None
 
-        # Walk through all files and subdirectories in the provided directory
-        for root, dirs, files in os.walk(directory):
-            # Apply exclusion logic based on ignore patterns or default list
-            if ignore_patterns:
-                dirs[:] = [d for d in dirs if not ignore_patterns.match_file(os.path.join(root, d))]
-            else:
-                # If no ignore file, use the default exclusions
-                dirs[:] = [d for d in dirs if d not in exclude_dirs]
+    ignore_patterns = load_ignore_patterns(ignore_dir)
+    print(f"Using ignore patterns from {ignore_dir} for brevity:")
+    print(get_ignored_items(ignore_dir))
+    return ignore_patterns, ignore_dir
 
-            for file in files:
-                file_path = os.path.join(root, file)
 
-                # Skip the output file (context.txt) itself
-                if file == output_file:
-                    continue
+def exclude_directories(dirs, root, ignore_patterns, exclude_dirs):
+    """Modify dirs in-place to exclude directories based on ignore patterns or default list."""
+    if ignore_patterns:
+        dirs[:] = [d for d in dirs if not ignore_patterns.match_file(os.path.join(root, d))]
+    else:
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
 
-                # Skip files based on ignore patterns
-                if ignore_patterns and ignore_patterns.match_file(file_path):
-                    continue
 
-                # If valid extensions are provided, only include matching files
-                if valid_extensions and not has_valid_extension(file, valid_extensions):
-                    continue
+def process_file(file_path, directory, outfile):
+    """Process an individual file: check readability, write to the output file."""
+    relative_path = os.path.relpath(file_path, directory)
 
-                # Check if the file is human-readable
-                if is_human_readable(file_path):
-                    try:
-                        # Try to open the file and read its contents in UTF-8
-                        with open(file_path, 'r', encoding='utf-8') as infile:
-                            outfile.write(f"{os.path.relpath(file_path, directory)}\n")
-                            outfile.write(infile.read())
-                            outfile.write("\n\n" + "=" * 50 + "\n\n")
-                    except (UnicodeDecodeError, IOError):
-                        # Handle files that cannot be read in UTF-8
-                        outfile.write(f"{os.path.relpath(file_path, directory)}\n")
-                        outfile.write("Text not generated, file is not human-readable or could not be decoded\n\n")
-                        outfile.write("=" * 50 + "\n\n")
-                else:
-                    # Write a message for non-human-readable files
-                    outfile.write(f"{os.path.relpath(file_path, directory)}\n")
-                    outfile.write("Text not generated, file is not human-readable\n\n")
-                    outfile.write("=" * 50 + "\n\n")
-    
+    # Check if the file is human-readable
+    if is_human_readable(file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as infile:
+                outfile.write(f"{relative_path}\n")
+                outfile.write(infile.read())
+                outfile.write("\n\n" + "=" * 50 + "\n\n")
+        except (UnicodeDecodeError, IOError):
+            outfile.write(f"{relative_path}\n")
+            outfile.write("Text not generated, file is not human-readable or could not be decoded\n\n")
+            outfile.write("=" * 50 + "\n\n")
+    else:
+        outfile.write(f"{relative_path}\n")
+        outfile.write("Text not generated, file is not human-readable\n\n")
+        outfile.write("=" * 50 + "\n\n")
+
+
+def merge_files_in_directory(directory, valid_extensions=None, output_file='context.txt'):
+    """Main function that orchestrates the merging of files in the directory."""
+    # Setup: delete the old output file if it exists and open a new one
+    outfile = setup_output_file(output_file)
+
+    # Get ignore patterns, or use default exclusions
+    ignore_patterns, ignore_dir = get_ignore_patterns()
+    default_exclude_dirs = ['env', 'venv', '__pycache__', '.git', 'build', 'dist']
+    exclude_dirs = default_exclude_dirs if ignore_patterns is None else []
+
+    # Write the directory structure at the top of the file
+    outfile.write("Directory Structure:\n")
+    write_directory_structure(directory, outfile, ignore_patterns=ignore_patterns, exclude_dirs=exclude_dirs)
+
+    # Walk through all files and subdirectories
+    for root, dirs, files in os.walk(directory):
+        exclude_directories(dirs, root, ignore_patterns, exclude_dirs)
+
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            # Skip the output file (context.txt) itself
+            if file == output_file:
+                continue
+
+            # Skip files based on ignore patterns
+            if ignore_patterns and ignore_patterns.match_file(file_path):
+                continue
+
+            # If valid extensions are provided, only include matching files
+            if valid_extensions and not has_valid_extension(file, valid_extensions):
+                continue
+
+            # Process the file (read, check human readability, write to output)
+            process_file(file_path, directory, outfile)
+
+    # Close the output file after processing
+    outfile.close()
     print(f"Generated 'context.txt' at '{os.getcwd()}/context.txt'")
-
 
 
 ==================================================
