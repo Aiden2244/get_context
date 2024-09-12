@@ -7,8 +7,10 @@ def get_line_number(content, position):
 
 def parse(content):
     """Extracts both commands and test case labels from the content."""
-    combined_list = []
-    context_output_list = []
+    commands = []
+    test_cases = []
+    error_cates = []
+    context_outputs = []
 
     # Regular expression to match commands, test case labels, and output
     command_pattern = re.compile(r'\*\*Command:\*\*\s*\n```bash\s*\n(.*?)\n```', re.DOTALL)
