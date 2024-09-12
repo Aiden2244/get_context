@@ -2,58 +2,83 @@ import re
 import sys
 
 def get_line_number(content, position):
-    """Helper function to find the line number given a position in the file content."""
+    """
+    Find the line number in the file content for a given character position.
+
+    Args:
+        content (str): The entire content of the file.
+        position (int): The character position within the content to find the line number for.
+
+    Returns:
+        int: The line number corresponding to the given position.
+    """
     return content.count('\n', 0, position) + 1
 
-def parse(content):
-    """Extracts both commands and test case labels from the content."""
-    commands = []
-    test_cases = []
-    error_cates = []
-    context_outputs = []
 
-    # Regular expression to match commands, test case labels, and output
+def get_list_from_matches(pattern, description_text):
+    """
+    Generate a list of tuples containing the line number and matched element from the content.
+
+    Args:
+        pattern (re.Pattern): Compiled regular expression pattern to search for in the description_text.
+        description_text (str): The text to search for pattern matches.
+
+    Returns:
+        list: A list of tuples where each tuple contains the line number and the matched element as a string.
+    """
+    parsed_outputs = []
+    
+    for match in pattern.finditer(description_text):
+        element = match.group(1).strip()
+        line_number = get_line_number(description_text, match.start())
+        parsed_outputs.append((line_number, element))
+
+    return parsed_outputs
+
+
+def parse(content):
+    """
+    Extract lists of commands, test cases, error cases, and context.txt outputs from the content.
+
+    Args:
+        content (str): The entire file content to parse.
+
+    Returns:
+        tuple: A tuple containing four lists:
+            - commands: List of (line number, command) tuples.
+            - test_cases: List of (line number, test case label) tuples.
+            - error_cases: List of (line number, error case label) tuples.
+            - context_outputs: List of (line number, context output) tuples.
+    """
+    
+    # Regular expressions to match commands, test case labels, error cases, and context.txt outputs
     command_pattern = re.compile(r'\*\*Command:\*\*\s*\n```bash\s*\n(.*?)\n```', re.DOTALL)
     test_case_pattern = re.compile(r'## (TEST CASE) (\d+[a-zA-Z])', re.DOTALL)
     error_case_pattern = re.compile(r'## (ERROR CASE) (\d+[a-zA-Z])', re.DOTALL)
     context_output_pattern = re.compile(r'\*\*context\.txt output:\*\*\s*```.*?\n(.*?)\n```', re.DOTALL)
 
-    # Extract commands
-    for match in command_pattern.finditer(content):
-        command = match.group(1).strip().split()  # Tokenize the command
-        line_number = get_line_number(content, match.start())  # Get line number
-        combined_list.append((line_number, command))
+    # Extract matches and associated line numbers
+    commands = get_list_from_matches(command_pattern, content)
+    test_cases = get_list_from_matches(test_case_pattern, content)
+    error_cases = get_list_from_matches(error_case_pattern, content)
+    context_outputs = get_list_from_matches(context_output_pattern, content)
 
-    # Extract test case labels
-    for match in test_case_pattern.finditer(content):
-        case_type = match.group(1)
-        case_label = match.group(2)
-        line_number = get_line_number(content, match.start())  # Get line number
-        combined_list.append((line_number, [case_type, case_label]))
-
-    # Extract context.txt outputs
-    for match in context_output_pattern.finditer(content):
-        context_output = match.group(1).strip()  # Get the entire context.txt output as a string
-        context_output_list.append(context_output)
-
-    # Sort the combined list by line number and return the lists
-    sorted_combined_list = [content for _, content in sorted(combined_list, key=lambda x: x[0])]
-
-    return sorted_combined_list, context_output_list
+    return commands, test_cases, error_cases, context_outputs
+    
 
 if __name__ == "__main__":
+    """
+    Main execution block to read file content from the command line argument, 
+    parse the content, and print extracted commands, test cases, error cases, and context outputs.
+    """
     file_path = sys.argv[1]
 
     with open(file_path, 'r') as file:
         content = file.read()
 
-    combined_list, context_output_list = parse(content)
+    commands, test_cases, error_cases, context_outputs = parse(content)
 
-    print("Combined List:")
-    for item in combined_list:
-        print(item)
-
-    print("\nContext.txt Output List:")
-    for i in range(len(context_output_list)):
-        print(f"\n\ncontext.txt output {i}: ")
-        print(context_output_list[i])
+    print(f"Commands: {commands}\n")
+    print(f"Test cases: {test_cases}\n")
+    print(f"Error cases: {error_cases}\n")
+    print(f"Context outputs: {context_outputs}\n")
