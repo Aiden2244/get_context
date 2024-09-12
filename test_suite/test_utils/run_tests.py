@@ -58,21 +58,10 @@ def main():
     with open(description_file, 'r') as file:
         content = file.read()
 
-    combined_list, context_output_list = parse(content)
+    commands, test_cases, error_cases, context_outputs = parse(desctiption_text)
 
-    output_index = 0
-    for item in combined_list:
-        if item[0] in ["TEST CASE", "ERROR CASE"]:
-            print("*" * 50 + "\n")
-            print("*" * 50 + "\n")
-            print(f"{' '.join(item)}")
-        else:
-            print("-----")
-            print(f"Running command: {' '.join(item)}")
-            success = run_command(item, context_output_list[output_index])
-            if success: output_index += 1
-            output_index = min(output_index, len(context_output_list)-1)
-            print()
+    
+    
     
     file.close()
 
