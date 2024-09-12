@@ -12,7 +12,8 @@ def parse(content):
 
     # Regular expression to match commands, test case labels, and output
     command_pattern = re.compile(r'\*\*Command:\*\*\s*\n```bash\s*\n(.*?)\n```', re.DOTALL)
-    case_pattern = re.compile(r'## (TEST CASE|ERROR CASE) (\d+[a-zA-Z])', re.DOTALL)
+    test_case_pattern = re.compile(r'## (TEST CASE) (\d+[a-zA-Z])', re.DOTALL)
+    error_case_pattern = re.compile(r'## (ERROR CASE) (\d+[a-zA-Z])', re.DOTALL)
     context_output_pattern = re.compile(r'\*\*context\.txt output:\*\*\s*```.*?\n(.*?)\n```', re.DOTALL)
 
     # Extract commands
@@ -22,7 +23,7 @@ def parse(content):
         combined_list.append((line_number, command))
 
     # Extract test case labels
-    for match in case_pattern.finditer(content):
+    for match in test_case_pattern.finditer(content):
         case_type = match.group(1)
         case_label = match.group(2)
         line_number = get_line_number(content, match.start())  # Get line number
